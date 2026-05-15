@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Repeat and Rare Question Separation</title>
+  <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero">
+      <div>
+        <h1>Repeat and Rare Question Separation</h1>
+        <p class="summary">Upload question papers or notes, extract valid questions, and separate repeated questions from rare ones with downloadable CSV reports.</p>
+        <div class="hero-chips">
+          <span>PDF</span>
+          <span>DOCX</span>
+          <span>Images</span>
+          <span>CSV Reports</span>
+        </div>
+      </div>
+    </section>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <section class="messages">
+          {% for message in messages %}
+            <p>{{ message }}</p>
+          {% endfor %}
+        </section>
+      {% endif %}
+    {% endwith %}
+
+    <section class="upload-card">
+      <div class="upload-copy">
+        <h2>Upload Files</h2>
+        <p>Select one or more PDF, DOCX, PNG, JPG, or JPEG files. The system will process them together and create one final report set.</p>
+      </div>
+
+      <form method="post" enctype="multipart/form-data" class="upload-form">
+        <div class="file-box">
+          <label for="files">Choose question files</label>
+          <input id="files" name="files" type="file" accept=".pdf,.docx,.png,.jpg,.jpeg" multiple required>
+        </div>
+
+        <div class="threshold-box">
+          <label for="threshold">Threshold</label>
+          <input id="threshold" name="threshold" type="number" step="0.01" min="0" max="1" value="0.55">
+        </div>
+
+        <button type="submit">Process Files</button>
+      </form>
+    </section>
+
+    {% if result %}
+      <section class="stats-grid">
+        <div class="stat">
+          <span>Total Questions</span>
+          <strong>{{ result.total_questions }}</strong>
+        </div>
+        <div class="stat">
+          <span>Repeated</span>
+          <strong>{{ result.repeated_count }}</strong>
+        </div>
+        <div class="stat">
+          <span>Rare</span>
+          <strong>{{ result.rare_count }}</strong>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Processed Files</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>File</th>
+                <th>Questions</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for file in result.file_summaries %}
+                <tr>
+                  <td>{{ file.file }}</td>
+                  <td>{{ file.count }}</td>
+                  <td>{{ file.status }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="report-browser">
+        <aside class="report-menu panel">
+          <h2>Generated Reports</h2>
+
+          <button class="report-tab active" type="button" data-report="repeated">
+            <span>Repeated Questions</span>
+            <strong>{{ result.repeated_count }}</strong>
+          </button>
+
+          <button class="report-tab" type="button" data-report="rare">
+            <span>Rare Questions</span>
+            <strong>{{ result.rare_count }}</strong>
+          </button>
+
+          <button class="report-tab" type="button" data-report="similarity">
+            <span>Similarity Report</span>
+            <strong>{{ result.similarity_count }}</strong>
+          </button>
+        </aside>
+
+        <div class="panel report-preview active" id="report-repeated">
+          <div class="preview-header">
+            <div>
+              <h2>Repeated Questions Preview</h2>
+              <p>{{ result.repeated_count }} repeated questions found</p>
+            </div>
+            <a href="{{ url_for('download_file', filename='repeated_questions.csv') }}">Download CSV</a>
+          </div>
+
+          {% if result.repeated_preview %}
+            <div class="question-list">
+              {% for row in result.repeated_preview %}
+                <article>
+                  <strong>{{ row.Question }}</strong>
+                  <span>{{ row.Source_File }} - score {{ row.Max_Similarity }}</span>
+                </article>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="empty"></p>
+          {% endif %}
+        </div>
+
+        <div class="panel report-preview" id="report-rare">
+          <div class="preview-header">
+            <div>
+              <h2>Rare Questions Preview</h2>
+              <p>{{ result.rare_count }} rare questions found</p>
+            </div>
+            <a href="{{ url_for('download_file', filename='rare_questions.csv') }}">Download CSV</a>
+          </div>
+
+          {% if result.rare_preview %}
+            <div class="question-list">
+              {% for row in result.rare_preview %}
+                <article>
+                  <strong>{{ row.Question }}</strong>
+                  <span>{{ row.Source_File }} - score {{ row.Max_Similarity }}</span>
+                </article>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="empty"></p>
+          {% endif %}
+        </div>
+
+        <div class="panel report-preview" id="report-similarity">
+          <div class="preview-header">
+            <div>
+              <h2>Similarity Report Preview</h2>
+              <p>{{ result.similarity_count }} question pairs compared</p>
+            </div>
+            <a href="{{ url_for('download_file', filename='similarity_report.csv') }}">Download CSV</a>
+          </div>
+
+          
+        </div>
+      </section>
+    {% endif %}
+  </main>
+
+  <script>
+    const tabs = document.querySelectorAll(".report-tab");
+    const previews = document.querySelectorAll(".report-preview");
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const selectedReport = tab.dataset.report;
+
+        tabs.forEach((item) => item.classList.remove("active"));
+        previews.forEach((preview) => preview.classList.remove("active"));
+
+        tab.classList.add("active");
+        document.getElementById(`report-${selectedReport}`).classList.add("active");
+      });
+    });
+  </script>
+</body>
+</html>

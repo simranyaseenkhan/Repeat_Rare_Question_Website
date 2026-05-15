@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: repeat-rare-question-separator
+    env: docker
+    plan: free
+    autoDeploy: true

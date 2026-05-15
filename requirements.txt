@@ -1,0 +1,11 @@
+pandas
+scikit-learn
+nltk
+pdfplumber
+PyPDF2
+python-docx
+pytesseract
+opencv-python
+Pillow
+Flask
+gunicorn
