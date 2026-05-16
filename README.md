@@ -31,6 +31,7 @@ A Flask-based web application that extracts questions from PDF, DOCX, and image 
 ```bash
 pip install -r requirements.txt
 python app.py
+```
 
 ## Author
 - Simran Yaseen Khan
