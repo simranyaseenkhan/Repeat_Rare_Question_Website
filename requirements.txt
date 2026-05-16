@@ -5,7 +5,7 @@ pdfplumber
 PyPDF2
 python-docx
 pytesseract
-opencv-python
+opencv-python-headless
 Pillow
 Flask
 gunicorn
