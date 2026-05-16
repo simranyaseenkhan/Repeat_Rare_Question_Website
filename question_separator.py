@@ -619,18 +619,19 @@ def process_files(
     )
 
     summary = {
-        "file_summaries": file_summaries,
-        "total_questions": len(all_questions),
-        "repeated_count": len(repeated_questions),
-        "rare_count": len(rare_questions),
-        "output_folder": str(output_folder.resolve()),
-        "repeated_path": str(repeated_path.resolve()),
-        "rare_path": str(rare_path.resolve()),
-        "similarity_path": str(similarity_path.resolve()),
-        "repeated_questions": repeated_questions,
-        "rare_questions": rare_questions,
-        "similarity_report": similarity_report,
-    }
+    "file_summaries": file_summaries,
+    "total_questions": len(all_questions),
+    "repeated_count": len(repeated_questions),
+    "rare_count": len(rare_questions),
+    "output_folder": str(output_folder.resolve()),
+    "repeated_path": str(repeated_path.resolve()),
+    "rare_path": str(rare_path.resolve()),
+    "similarity_path": str(similarity_path.resolve()),
+    "repeated_questions": repeated_questions,
+    "rare_questions": rare_questions,
+    "similarity_report": similarity_report,
+    "ml_results": {},
+}
 
     return summary
 
